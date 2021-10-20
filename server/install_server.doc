@@ -1,0 +1,8 @@
+yarn init -y
+yarn add typescript ts-node -D
+yarn add apollo-server graphql
+yarn add @graphql-codegen/cli -D
+yarn add @graphql-codegen/introspection @graphql-codegen/named-operations-object -D
+yarn add @graphql-codegen/typescript @graphql-codegen/typescript-operations -D
+yarn add @graphql-codegen/typescript-urql @graphql-codegen/urql-introspection @graphql-codegen/urql-svelte-operations-store -D
+yarn add @urql/svelte urql graphql

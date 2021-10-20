@@ -1,0 +1,6 @@
+query Colors {
+	colors {
+		hexCode
+		colorName
+	}
+}
