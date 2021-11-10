@@ -1,1 +1,2 @@
 yarn add @graphql-codegen/cli @graphql-codegen/introspection @graphql-codegen/named-operations-object @graphql-codegen/typescript @graphql-codegen/typescript-operations @graphql-codegen/typescript-urql @graphql-codegen/urql-introspection @graphql-codegen/urql-svelte-operations-store
+yarn add @urql/svelte -D

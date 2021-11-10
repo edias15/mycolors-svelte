@@ -2,6 +2,24 @@ const windowStateManager = require('electron-window-state');
 const contextMenu = require('electron-context-menu');
 const { app, BrowserWindow } = require('electron');
 const serve = require('electron-serve');
+const mysql = require('mysql2');
+require('dotenv').config()
+
+connect();
+
+async function connect() {
+	try {
+		const connection = (mysql.createConnection({
+			host: process.env.DB_HOST,
+			user: process.env.DB_USER,
+			password: process.env.DB_PASSWORD,
+			database: process.env.DB_NAME,
+			port: process.env.DB_PORT,
+		}));
+	} catch (error) {
+		console.log(error);
+	}
+}
 
 try {
 	require('electron-reloader')(module);
@@ -18,6 +36,9 @@ function createWindow() {
 	let windowState = windowStateManager({
 		defaultWidth: 800,
 		defaultHeight: 600,
+		webPreferences: {
+      nodeIntegration: true,
+    }
 	});
 	
 	const mainWindow = new BrowserWindow({
@@ -81,8 +102,12 @@ function createMainWindow() {
 	mainWindow = createWindow();
 	mainWindow.once('close', () => { mainWindow = null });
 
-	if (dev) loadVite(port);
-	else serveURL(mainWindow);
+	if (dev) {
+		mainWindow.webContents.openDevTools()
+		loadVite(port)
+	} else {
+		serveURL(mainWindow)
+	}
 }
 
 app.commandLine.appendSwitch('host-rules', 'MAP * 127.0.0.1');
@@ -94,4 +119,4 @@ app.on('activate', () => {
 });
 app.on('window-all-closed', () => {
 	if (process.platform !== 'darwin') app.quit();
-});
+})

@@ -1,38 +1,39 @@
-<script>
+<script lang="ts">
 	import { fly } from 'svelte/transition';
 	import { onMount } from 'svelte';
 	import { TextInput } from 'carbon-components-svelte';
 	import Fa from 'svelte-fa/src/fa.svelte';
-	import { faTimes } from '@fortawesome/free-solid-svg-icons';
+	import { faTimes, faSearch } from '@fortawesome/free-solid-svg-icons';
 
 	let visible = false,
 		color = '',
 		approximateColor = '',
 		approximateColorName = '',
-		hexColors = [],
-		nameColors = [],
+		hexColors: string[] = [],
+		nameColors: string[] = [],
 		nameColor = '',
 		found = true,
 		filled = false;
 
 	onMount(() => (visible = true));
 
-	function handleChange(e) {
-		console.log(e.target.value);
+	function handleChange(e: any) {
 		color = e.target.value;
-		found = color === '' ? false : true;
-		filled = color === '' ? false : true;
 	}
 
-	function hexPutHash(c) {
+	function hexPutHash(c: string) {
 		return c.search('#') === -1 ? `#${c}` : c;
 	}
 
-	function handleKeyUp(e) {
-		if (e.length > 6) {
-			alert('Please enter a valid hex color');
-			return;
+	function handleKeyDown(e: any) {
+		filled = true;
+		if (e.key === 'Enter' || color.replace('#', '').length === 6) {
+			searchNamesColor();
 		}
+	}
+
+	function handleKeyUp(e: any) {
+		console.log('tecla -> ', e.key);
 		filled = true;
 		if (e.key === 'Enter' || color.replace('#', '').length === 6) {
 			searchNamesColor();
@@ -64,17 +65,18 @@
 		}
 	}
 
-	function checkUniqueName(name) {
-		return nameColors.find((n) => n.name === name);
+	function checkUniqueName(namep: string) {
+		return true;
+		//		return nameColors.find((n) => n.hex === namep);
 	}
 
 	function saveNamesColor() {
-		const a = checkUniqueName();
+		const a = checkUniqueName(nameColor);
 		console.log('check Name: ', a);
 		return;
 		const myHeaders = new Headers();
 		myHeaders.append('Access-Control-Allow-Origin', '*');
-		myHeaders.append('Access-Control-Allow-Credentials', true);
+		myHeaders.append('Access-Control-Allow-Credentials', 'true');
 		myHeaders.append('Access-Control-Allow-Headers', '*');
 		myHeaders.append('Content-Type', 'application/json');
 		const colorWithHash = hexPutHash(color);
@@ -124,7 +126,7 @@
 		}
 	}
 
-	function getAllColors() {
+	function getAllColors_() {
 		const myHeaders = new Headers();
 		myHeaders.append('Access-Control-Allow-Origin', '*');
 		myHeaders.append('Access-Control-Allow-Credentials', true);
@@ -148,7 +150,7 @@
 			.then((data) => {
 				const hexColor = [],
 					nameColor = [];
-				data.map((item) => {
+				data.map((item: any) => {
 					hexColor.push(item.hex);
 				});
 				data.map((item) => {
@@ -160,6 +162,17 @@
 	}
 
 	function searchNamesColor() {
+		return client.query({
+			query: gql`
+				colorByHex(hex: "{$color}") {
+					colors {
+						hex
+						name
+					}
+				}
+			`,
+		});
+
 		const myHeaders = new Headers();
 		myHeaders.append('Access-Control-Allow-Origin', '*');
 		myHeaders.append('Access-Control-Allow-Credentials', true);
@@ -211,38 +224,24 @@
 					class="input-hexcolor"
 					id="hexColor"
 					type="text"
+					maxlength={7}
 					placeholder="#999999"
 					bind:value={color}
 					on:change={handleChange}
 					on:keyup={handleKeyUp}
-				/>
-				<TextInput
-					required
-					label="Hex code"
-					bind:value={color}
-					type="search"
-					maxLength={7}
-					placeholder="#999999"
-					helperText="Color's hex code."
-					inputProps={{ maxLength: 7 }}
-					on:change={handleChange}
-					on:keyup={handleKeyUp}
+					on:keydown={handleKeyDown}
 				/>
 				{#if filled}
 					<Fa icon={faTimes} on:click={handleClean} />
-				{:else}
-					<div />
 				{/if}
-				<TextInput
+				<input
 					required
 					id="nameInput"
 					label="Name"
 					type="text"
-					maxLength={20}
+					maxlength={20}
 					placeholder=""
 					disabled={found}
-					helperText="Color's name."
-					inputProps={{ maxLength: 20 }}
 				/>
 			</div>
 		</div>

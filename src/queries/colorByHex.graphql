@@ -1,0 +1,6 @@
+query ColorByHex($hex: String!) {
+	colorByHex(hex: $hex) {
+		hex
+		name
+	}
+}

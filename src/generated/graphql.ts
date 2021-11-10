@@ -16,27 +16,49 @@ export type Scalars = {
 
 export type Color = {
   __typename?: 'Color';
-  colorName?: Maybe<Scalars['String']>;
-  hexCode?: Maybe<Scalars['String']>;
+  hex?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
 };
 
 export type Query = {
   __typename?: 'Query';
+  colorByHex?: Maybe<Color>;
   colors?: Maybe<Array<Maybe<Color>>>;
 };
+
+
+export type QueryColorByHexArgs = {
+  hex: Scalars['String'];
+};
+
+export type ColorByHexQueryVariables = Exact<{
+  hex: Scalars['String'];
+}>;
+
+
+export type ColorByHexQuery = { __typename?: 'Query', colorByHex?: { __typename?: 'Color', hex?: string | null | undefined, name?: string | null | undefined } | null | undefined };
 
 export type ColorsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ColorsQuery = { __typename?: 'Query', colors?: Array<{ __typename?: 'Color', hexCode?: string | null | undefined, colorName?: string | null | undefined } | null | undefined> | null | undefined };
+export type ColorsQuery = { __typename?: 'Query', colors?: Array<{ __typename?: 'Color', hex?: string | null | undefined, name?: string | null | undefined } | null | undefined> | null | undefined };
 
 
-export const ColorsDocument = gql`
-    query Colors {
-  colors {
-    hexCode
-    colorName
+export const ColorByHexDocument = gql`
+    query ColorByHex($hex: String!) {
+  colorByHex(hex: $hex) {
+    hex
+    name
   }
 }
     `;
+export const ColorsDocument = gql`
+    query Colors {
+  colors {
+    hex
+    name
+  }
+}
+    `;
+export type ColorByHexQueryStore = OperationStore<ColorByHexQuery, ColorByHexQueryVariables>;
 export type ColorsQueryStore = OperationStore<ColorsQuery, ColorsQueryVariables>;
